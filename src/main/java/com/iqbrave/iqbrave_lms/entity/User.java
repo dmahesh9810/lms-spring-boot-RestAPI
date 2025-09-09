@@ -14,21 +14,17 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true, nullable = false)
+    private String email;
+
     @Column(nullable = false)
     private String name;
-
-    @Column(nullable = false, unique = true)
-    private String email;
 
     @Column(nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
-    private Role role; // STUDENT, INSTRUCTOR, ADMIN
+    @Column(nullable = false)
+    private Role role;  // Use your concrete Role enum here
 }
 
-enum Role {
-    STUDENT,
-    INSTRUCTOR,
-    ADMIN
-}
