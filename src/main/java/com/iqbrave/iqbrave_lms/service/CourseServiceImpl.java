@@ -15,7 +15,8 @@ import java.util.Optional;
 public class CourseServiceImpl implements CourseService {
 
     @Autowired
-    private CourseRepository courseRepository;
+    private final CourseRepository courseRepository;
+
 
     @Autowired
     private UserRepository userRepository;
@@ -51,6 +52,11 @@ public class CourseServiceImpl implements CourseService {
                 .orElseThrow(() -> new RuntimeException("Course not found"));
         courseRepository.delete(existing); // hard delete
     }
+
+    public CourseServiceImpl(CourseRepository courseRepository) {
+        this.courseRepository = courseRepository;
+    }
+
 
     @Override
     public List<Course> listCourses() {
