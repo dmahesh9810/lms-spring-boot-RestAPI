@@ -1,6 +1,7 @@
 package com.iqbrave.iqbrave_lms.config;
 
-import com.iqbrave.iqbrave_lms.repository.UserRepository;
+import com.iqbrave.iqbrave_lms.service.CustomUserDetailsService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,18 +11,25 @@ import org.springframework.security.authentication.dao.DaoAuthenticationProvider
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
 
+// ... existing code ...
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
     @Autowired
-    private UserRepository userRepository;
+    private CustomUserDetailsService customUserDetailsService;
+
+    @Autowired
+    private com.iqbrave.iqbrave_lms.security.JwtAuthenticationFilter jwtAuthenticationFilter;
+
+    @Autowired
+    private com.iqbrave.iqbrave_lms.exception.CustomAccessDeniedHandler customAccessDeniedHandler;
 
     // Password encoder bean
     @Bean
@@ -29,23 +37,11 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    // UserDetailsService to load users from DB
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return email -> userRepository.findByEmail(email)
-                .map(user -> org.springframework.security.core.userdetails.User
-                        .withUsername(user.getEmail())
-                        .password(user.getPassword()) // Must be encoded
-                        .roles(user.getRole().name())
-                        .build())
-                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-    }
-
     // Authentication provider
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService());
+        authProvider.setUserDetailsService(customUserDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }
@@ -60,23 +56,30 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Disable CSRF for API
-
+                .csrf(csrf -> csrf.disable()) // Disable CSRF for APIs
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/users/register", "/api/users/login").permitAll()
-                        .requestMatchers("/api/courses/**").permitAll()// Only instructor/admin can manage courses
-
-                        // Role-based endpoints
+                        .requestMatchers("/api/courses/**").hasRole("INSTRUCTOR")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/instructor/**").hasRole("INSTRUCTOR")
                         .requestMatchers("/api/student/**").hasRole("STUDENT")
-
                         .anyRequest().authenticated()
                 )
-
+                .exceptionHandling(ex -> ex
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"error\":\"Unauthorized\"}");
+                        })
+                        .accessDeniedHandler(customAccessDeniedHandler)
+                )
                 .formLogin(form -> form.disable()) // Disable default login form
                 .httpBasic(httpBasic -> httpBasic.disable()); // Disable basic auth
 
+        http.addFilterBefore(jwtAuthenticationFilter, org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
+
 }

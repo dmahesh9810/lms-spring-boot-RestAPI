@@ -22,18 +22,18 @@ public class JwtUtil {
         this.jwtExpirationMs = jwtExpirationMs;
     }
 
-    // ✅ Generate token with email + role
+    // Generate token with email + role
     public String generateToken(String email, String role) {
         return Jwts.builder()
                 .setSubject(email)
-                .claim("role", role)   // store role inside token
+                .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
 
-    // ✅ Generate token with only email
+    // Generate token with email only (no role claim)
     public String generateToken(String email) {
         return Jwts.builder()
                 .setSubject(email)
@@ -43,36 +43,32 @@ public class JwtUtil {
                 .compact();
     }
 
-    // ✅ Extract email
-    public String getEmailFromToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(secretKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        return claims.getSubject();
+    // Extract email (username)
+    public String extractUsername(String token) {
+        return getClaims(token).getSubject();
     }
 
-    // ✅ Extract role
-    public String getRoleFromToken(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(secretKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        return claims.get("role", String.class);
+    // Extract role
+    public String extractRole(String token) {
+        return getClaims(token).get("role", String.class);
     }
 
-    // ✅ Validate token
+    // Validate token (just checks signature + expiry)
     public boolean validateToken(String token) {
         try {
-            Jwts.parserBuilder()
-                    .setSigningKey(secretKey)
-                    .build()
-                    .parseClaimsJws(token);
+            getClaims(token);
             return true;
         } catch (Exception e) {
             return false;
         }
+    }
+
+    // Helper
+    private Claims getClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
     }
 }
