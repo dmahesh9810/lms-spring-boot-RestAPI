@@ -14,5 +14,14 @@ public class LessonDTO {
     private String filePath;
     private String videoUrl;
     private Long moduleId; // reference only, not full Module
+
+    // Provide content alias used in tests, mapping to description
+    public String getContent() {
+        return this.description;
+    }
+
+    public void setContent(String content) {
+        this.description = content;
+    }
 }
 

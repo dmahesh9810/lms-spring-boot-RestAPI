@@ -22,5 +22,13 @@ public class Lesson {
     @JoinColumn(name = "module_id")
     @JsonBackReference
     private Module module;
+
+    // Convenience constructor used in tests
+    public Lesson(Long id, String title, String description, Module module) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.module = module;
+    }
 }
 
