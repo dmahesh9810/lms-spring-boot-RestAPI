@@ -6,7 +6,7 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>3.5.5</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath/> <!-- lookup parent from a repository -->
 	</parent>
 	<groupId>com.iqbrave</groupId>
 	<artifactId>iqbrave-lms</artifactId>
@@ -28,7 +28,22 @@
 	</scm>
 	<properties>
 		<java.version>17</java.version>
+        <!-- Removed explicit JUnit version properties to avoid mismatch with Spring Boot's managed versions -->
 	</properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <!-- Align all JUnit Jupiter/Platform artifacts to 5.12.2/1.12.2 -->
+      <dependency>
+        <groupId>org.junit</groupId>
+        <artifactId>junit-bom</artifactId>
+        <version>5.12.2</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -85,7 +100,28 @@
             <scope>runtime</scope>
         </dependency>
 
-    </dependencies>
+        <!-- ... existing code ... -->
+        <!-- Removed explicit JUnit dependencies that caused version clashes:
+             - org.junit.jupiter:junit-jupiter-api
+             - org.junit.jupiter:junit-jupiter-engine
+             - org.junit.platform:junit-platform-launcher
+             - org.junit.platform:junit-platform-suite-api
+        -->
+        <!-- ... existing code ... -->
+        <!-- Add this for @Suite and @SelectClasses -->
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-suite-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+    <dependency>
+      <groupId>org.junit.platform</groupId>
+      <artifactId>junit-platform-suite-engine</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <!-- ... existing code ... -->
+  </dependencies>
 
 	<build>
 		<plugins>
