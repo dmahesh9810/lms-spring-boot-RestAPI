@@ -1,7 +1,10 @@
 package com.iqbrave.iqbrave_lms.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Data
@@ -9,7 +12,6 @@ import lombok.*;
 @AllArgsConstructor
 @Table(name = "courses")
 public class Course {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,10 +22,14 @@ public class Course {
     @Column(length = 1000)
     private String description;
 
-    // Optional: who created the course
     @ManyToOne
     @JoinColumn(name = "instructor_id")
     private User instructor;
 
     private boolean active = true;
+
+    @OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<Module> modules;
 }
+

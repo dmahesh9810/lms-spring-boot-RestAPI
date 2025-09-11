@@ -3,7 +3,6 @@ package com.iqbrave.iqbrave_lms.controller;
 import com.iqbrave.iqbrave_lms.dto.CourseDTO;
 import com.iqbrave.iqbrave_lms.entity.Course;
 import com.iqbrave.iqbrave_lms.service.CourseService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,38 +11,41 @@ import java.util.List;
 @RequestMapping("/api/courses")
 public class CourseController {
 
-    @Autowired
-    private CourseService courseService;
+    private final CourseService courseService;
 
-    // Create course
+    public CourseController(CourseService courseService) {
+        this.courseService = courseService;
+    }
+
+    // ✅ Create course
     @PostMapping
     public Course createCourse(@RequestBody CourseDTO courseDTO) {
         return courseService.createCourse(courseDTO);
     }
 
-    // Update course
+    // ✅ Update course (using DTO instead of raw entity)
     @PutMapping("/{id}")
-    public Course updateCourse(@PathVariable Long id, @RequestBody Course course) {
-        return courseService.updateCourse(id, course);
+    public Course updateCourse(@PathVariable Long id, @RequestBody CourseDTO courseDTO) {
+        return courseService.updateCourse(id, courseDTO);
     }
 
-    // Delete course
+    // ✅ Delete course
     @DeleteMapping("/{id}")
     public String deleteCourse(@PathVariable Long id) {
         courseService.deleteCourse(id);
         return "Course deleted successfully";
     }
 
-    // List courses
+    // ✅ List all courses
     @GetMapping
     public List<Course> listCourses() {
         return courseService.listCourses();
     }
 
-    // Get single course
+    // ✅ Get a single course
     @GetMapping("/{id}")
     public Course getCourse(@PathVariable Long id) {
         return courseService.getCourseById(id)
-                .orElseThrow(() -> new RuntimeException("Course not found"));
+                .orElseThrow(() -> new RuntimeException("Course not found with id " + id));
     }
 }
