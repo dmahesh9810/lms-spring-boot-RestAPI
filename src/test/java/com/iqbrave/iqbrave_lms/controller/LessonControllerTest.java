@@ -3,7 +3,7 @@ package com.iqbrave.iqbrave_lms.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.iqbrave.iqbrave_lms.dto.LessonDTO;
 import com.iqbrave.iqbrave_lms.entity.Lesson;
-import com.iqbrave.iqbrave_lms.entity.Module;
+import com.iqbrave.iqbrave_lms.entity.CourseModule;
 import com.iqbrave.iqbrave_lms.service.LessonService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +50,7 @@ public class LessonControllerTest {
         dto.setContent("Lesson Content");
         dto.setModuleId(1L);
 
-        Lesson saved = new Lesson(1L, "Intro Lesson", "Lesson Content", new Module(1L, "Module 1", "Description", null, null));
+        Lesson saved = new Lesson(1L, "Intro Lesson", "Lesson Content", new CourseModule(1L, "Module 1", "Description", null, null));
 
         when(lessonService.createLesson(any(LessonDTO.class))).thenReturn(saved);
 
@@ -72,7 +72,7 @@ public class LessonControllerTest {
         dto.setContent("Updated Content");
         dto.setModuleId(1L);
 
-        Lesson updated = new Lesson(1L, "Updated Lesson", "Updated Content", new Module(1L, "Module 1", "Description", null, null));
+        Lesson updated = new Lesson(1L, "Updated Lesson", "Updated Content", new CourseModule(1L, "Module 1", "Description", null, null));
 
         when(lessonService.updateLesson(eq(1L), any(LessonDTO.class))).thenReturn(updated);
 
@@ -130,9 +130,9 @@ public class LessonControllerTest {
     // ✅ Test Get Lessons by Module
     @Test
     void testGetLessonsByModule() throws Exception {
-        Module module = new Module(1L, "Module 1", "Description", null, null);
-        Lesson l1 = new Lesson(1L, "Lesson 1", "Content 1", module);
-        Lesson l2 = new Lesson(2L, "Lesson 2", "Content 2", module);
+        CourseModule courseModule = new CourseModule(1L, "Module 1", "Description", null, null);
+        Lesson l1 = new Lesson(1L, "Lesson 1", "Content 1", courseModule);
+        Lesson l2 = new Lesson(2L, "Lesson 2", "Content 2", courseModule);
 
         when(lessonService.listLessons()).thenReturn(Arrays.asList(l1, l2));
 

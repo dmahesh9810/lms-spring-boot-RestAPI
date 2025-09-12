@@ -54,7 +54,7 @@ public class LessonController {
     public List<Lesson> getLessonsByModule(@PathVariable Long moduleId) {
         return lessonService.listLessons()
                 .stream()
-                .filter(l -> l.getModule() != null && l.getModule().getId().equals(moduleId))
+                .filter(l -> l.getCourseModule() != null && l.getCourseModule().getId().equals(moduleId))
                 .toList();
     }
 }

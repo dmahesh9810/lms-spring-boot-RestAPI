@@ -9,9 +9,10 @@ import java.util.List;
 @Repository
 public interface LessonRepository extends JpaRepository<Lesson, Long> {
 
-    // ✅ Find all lessons by module id
-    List<Lesson> findByModuleId(Long moduleId);
+    // Find all lessons by module id (via the courseModule relation)
+    List<Lesson> findByCourseModule_Id(Long moduleId);
 
+    // ... existing code ...
     // ✅ Search lessons by title (case-insensitive)
     List<Lesson> findByTitleContainingIgnoreCase(String title);
 }

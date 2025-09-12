@@ -1,7 +1,7 @@
 package com.iqbrave.iqbrave_lms.controller;
 
 import com.iqbrave.iqbrave_lms.dto.ModuleDTO;
-import com.iqbrave.iqbrave_lms.entity.Module;
+import com.iqbrave.iqbrave_lms.entity.CourseModule;
 import com.iqbrave.iqbrave_lms.service.ModuleService;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,13 +19,13 @@ public class ModuleController {
 
     // Create module
     @PostMapping
-    public Module createModule(@RequestBody ModuleDTO moduleDTO) {
+    public CourseModule createModule(@RequestBody ModuleDTO moduleDTO) {
         return moduleService.createModule(moduleDTO);
     }
 
     // Update module
     @PutMapping("/{id}")
-    public Module updateModule(@PathVariable Long id, @RequestBody ModuleDTO moduleDTO) {
+    public CourseModule updateModule(@PathVariable Long id, @RequestBody ModuleDTO moduleDTO) {
         return moduleService.updateModule(id, moduleDTO);
     }
 
@@ -38,20 +38,20 @@ public class ModuleController {
 
     // List all modules
     @GetMapping
-    public List<Module> listModules() {
+    public List<CourseModule> listModules() {
         return moduleService.listModules();
     }
 
     // Get single module
     @GetMapping("/{id}")
-    public Module getModule(@PathVariable Long id) {
+    public CourseModule getModule(@PathVariable Long id) {
         return moduleService.getModuleById(id)
                 .orElseThrow(() -> new RuntimeException("Module not found with id " + id));
     }
 
     // Optional: list modules by course
     @GetMapping("/course/{courseId}")
-    public List<Module> getModulesByCourse(@PathVariable Long courseId) {
+    public List<CourseModule> getModulesByCourse(@PathVariable Long courseId) {
         return moduleService.listModules()
                 .stream()
                 .filter(m -> m.getCourse() != null && m.getCourse().getId().equals(courseId))

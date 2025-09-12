@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "modules")
-public class Module {
+public class CourseModule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,7 +25,7 @@ public class Module {
     @JsonBackReference
     private Course course;
 
-    @OneToMany(mappedBy = "module", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "courseModule", cascade = CascadeType.ALL)
     @JsonManagedReference
     private List<Lesson> lessons;
 

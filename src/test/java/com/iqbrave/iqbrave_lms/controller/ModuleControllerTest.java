@@ -3,7 +3,7 @@ package com.iqbrave.iqbrave_lms.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.iqbrave.iqbrave_lms.dto.ModuleDTO;
 import com.iqbrave.iqbrave_lms.entity.Course;
-import com.iqbrave.iqbrave_lms.entity.Module;
+import com.iqbrave.iqbrave_lms.entity.CourseModule;
 import com.iqbrave.iqbrave_lms.service.ModuleService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -17,7 +17,6 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import com.iqbrave.iqbrave_lms.security.JwtAuthenticationFilter;
@@ -68,9 +67,9 @@ public class ModuleControllerTest {
     @Test
     void testCreateModule() throws Exception {
         ModuleDTO dto = new ModuleDTO(null, "Java Basics", "Intro to Java", 1L, null);
-        Module module = new Module(1L, "Java Basics", "Intro to Java", new Course(), null);
+        CourseModule courseModule = new CourseModule(1L, "Java Basics", "Intro to Java", new Course(), null);
 
-        Mockito.when(moduleService.createModule(any(ModuleDTO.class))).thenReturn(module);
+        Mockito.when(moduleService.createModule(any(ModuleDTO.class))).thenReturn(courseModule);
 
         mockMvc.perform(post("/api/modules")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -82,9 +81,9 @@ public class ModuleControllerTest {
     @Test
     void testUpdateModule() throws Exception {
         ModuleDTO dto = new ModuleDTO(null, "Spring Boot", "Updated", 1L, null);
-        Module module = new Module(1L, "Spring Boot", "Updated", new Course(), null);
+        CourseModule courseModule = new CourseModule(1L, "Spring Boot", "Updated", new Course(), null);
 
-        Mockito.when(moduleService.updateModule(eq(1L), any(ModuleDTO.class))).thenReturn(module);
+        Mockito.when(moduleService.updateModule(eq(1L), any(ModuleDTO.class))).thenReturn(courseModule);
 
         mockMvc.perform(put("/api/modules/1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -102,8 +101,8 @@ public class ModuleControllerTest {
 
     @Test
     void testListModules() throws Exception {
-        Module m1 = new Module(1L, "Java", "Basics", new Course(), null);
-        Module m2 = new Module(2L, "Spring", "Boot", new Course(), null);
+        CourseModule m1 = new CourseModule(1L, "Java", "Basics", new Course(), null);
+        CourseModule m2 = new CourseModule(2L, "Spring", "Boot", new Course(), null);
 
         Mockito.when(moduleService.listModules()).thenReturn(List.of(m1, m2));
 
@@ -114,9 +113,9 @@ public class ModuleControllerTest {
 
     @Test
     void testGetModuleById() throws Exception {
-        Module module = new Module(1L, "Java", "Basics", new Course(), null);
+        CourseModule courseModule = new CourseModule(1L, "Java", "Basics", new Course(), null);
 
-        Mockito.when(moduleService.getModuleById(1L)).thenReturn(Optional.of(module));
+        Mockito.when(moduleService.getModuleById(1L)).thenReturn(Optional.of(courseModule));
 
         mockMvc.perform(get("/api/modules/1"))
                 .andExpect(status().isOk())

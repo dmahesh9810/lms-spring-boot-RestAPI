@@ -30,7 +30,7 @@ public class Course {
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL)
     @JsonManagedReference
-    private List<Module> modules;
+    private List<CourseModule> courseModules;
 
     // Convenience constructor used in tests
     public Course(Long id, String title, String description) {

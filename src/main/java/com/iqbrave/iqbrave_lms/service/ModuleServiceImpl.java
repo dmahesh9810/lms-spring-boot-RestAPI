@@ -3,7 +3,7 @@ package com.iqbrave.iqbrave_lms.service;
 
 import com.iqbrave.iqbrave_lms.dto.ModuleDTO;
 import com.iqbrave.iqbrave_lms.entity.Course;
-import com.iqbrave.iqbrave_lms.entity.Module;
+import com.iqbrave.iqbrave_lms.entity.CourseModule;
 import com.iqbrave.iqbrave_lms.repository.CourseRepository;
 import com.iqbrave.iqbrave_lms.repository.ModuleRepository;
 import org.springframework.stereotype.Service;
@@ -28,24 +28,24 @@ public class ModuleServiceImpl implements ModuleService {
 
 
     @Override
-    public Module createModule(ModuleDTO dto) {
-        Module module = new Module();
-        module.setTitle(dto.getTitle());
-        module.setDescription(dto.getDescription());
+    public CourseModule createModule(ModuleDTO dto) {
+        CourseModule courseModule = new CourseModule();
+        courseModule.setTitle(dto.getTitle());
+        courseModule.setDescription(dto.getDescription());
 
         if (dto.getCourseId() != null) {
             Course course = courseRepository.findById(dto.getCourseId())
                     .orElseThrow(() -> new RuntimeException(
                             "Course not found with id " + dto.getCourseId()));
-            module.setCourse(course);
+            courseModule.setCourse(course);
         }
 
-        return moduleRepository.save(module);
+        return moduleRepository.save(courseModule);
     }
 
     @Override
-    public Module updateModule(Long id, ModuleDTO dto) {
-        Module existing = moduleRepository.findById(id)
+    public CourseModule updateModule(Long id, ModuleDTO dto) {
+        CourseModule existing = moduleRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Module not found with id " + id));
 
 
@@ -67,20 +67,20 @@ public class ModuleServiceImpl implements ModuleService {
     @Override
     @Transactional
     public void deleteModule(Long id) {
-        Module existing = moduleRepository.findById(id)
+        CourseModule existing = moduleRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Module not found with id " + id));
         moduleRepository.delete(existing);
     }
 
 
     @Override
-    public List<Module> listModules() {
+    public List<CourseModule> listModules() {
         return moduleRepository.findAll();
     }
 
 
     @Override
-    public Optional<Module> getModuleById(Long id) {
+    public Optional<CourseModule> getModuleById(Long id) {
         return moduleRepository.findById(id);
     }
 }

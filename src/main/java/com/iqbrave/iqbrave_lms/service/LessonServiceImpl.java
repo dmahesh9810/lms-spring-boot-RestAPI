@@ -3,7 +3,7 @@ package com.iqbrave.iqbrave_lms.service;
 
 import com.iqbrave.iqbrave_lms.dto.LessonDTO;
 import com.iqbrave.iqbrave_lms.entity.Lesson;
-import com.iqbrave.iqbrave_lms.entity.Module;
+import com.iqbrave.iqbrave_lms.entity.CourseModule;
 import com.iqbrave.iqbrave_lms.repository.LessonRepository;
 import com.iqbrave.iqbrave_lms.repository.ModuleRepository;
 import org.springframework.stereotype.Service;
@@ -37,9 +37,9 @@ public class LessonServiceImpl implements LessonService {
 
 
         if (dto.getModuleId() != null) {
-            Module module = moduleRepository.findById(dto.getModuleId())
+            CourseModule courseModule = moduleRepository.findById(dto.getModuleId())
                     .orElseThrow(() -> new RuntimeException("Module not found with id " + dto.getModuleId()));
-            lesson.setModule(module);
+            lesson.setCourseModule(courseModule);
         }
 
 
@@ -59,9 +59,9 @@ public class LessonServiceImpl implements LessonService {
 
 
         if (dto.getModuleId() != null) {
-            Module module = moduleRepository.findById(dto.getModuleId())
+            CourseModule courseModule = moduleRepository.findById(dto.getModuleId())
                     .orElseThrow(() -> new RuntimeException("Module not found with id " + dto.getModuleId()));
-            existing.setModule(module);
+            existing.setCourseModule(courseModule);
         }
 
 

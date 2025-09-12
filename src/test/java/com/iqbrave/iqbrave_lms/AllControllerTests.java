@@ -1,19 +1,17 @@
 package com.iqbrave.iqbrave_lms;
 
 
-import com.iqbrave.iqbrave_lms.controller.CourseControllerTest;
-import com.iqbrave.iqbrave_lms.controller.LessonControllerTest;
-import com.iqbrave.iqbrave_lms.controller.ModuleControllerTest;
-import com.iqbrave.iqbrave_lms.controller.UserControllerTest;
+import com.iqbrave.iqbrave_lms.controller.*;
 import org.junit.platform.suite.api.SelectClasses;
 import org.junit.platform.suite.api.Suite;
 
 @Suite
 @SelectClasses({
+        UserControllerTest.class,
         CourseControllerTest.class,
-        LessonControllerTest.class,
         ModuleControllerTest.class,
-        UserControllerTest.class
+        LessonControllerTest.class,
+        EnrollmentControllerTest.class
 })
 public class AllControllerTests {
 }
