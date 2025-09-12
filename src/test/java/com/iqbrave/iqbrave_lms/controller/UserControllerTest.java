@@ -1,6 +1,7 @@
 package com.iqbrave.iqbrave_lms.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.iqbrave.iqbrave_lms.dto.UserDTO;
 import com.iqbrave.iqbrave_lms.entity.Role;
 import com.iqbrave.iqbrave_lms.entity.User;
 import com.iqbrave.iqbrave_lms.service.UserService;
@@ -53,10 +54,24 @@ public class UserControllerTest {
 
         verify(userService, times(1)).getAllUsers();
     }
+    @Test
+    void testRegisterUser_invalidEmail() throws Exception {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setEmail("invalid"); // not a valid email
+        userDTO.setName("Ishan");
+        userDTO.setPassword("password123");
+        userDTO.setRole(Role.INSTRUCTOR);
+
+        mockMvc.perform(post("/api/users/register")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(new ObjectMapper().writeValueAsString(userDTO)))
+                .andExpect(status().isBadRequest()); // should fail validation
+    }
+
 
     @Test
     void testGetUserById() throws Exception {
-        User user = new User(1L, "instructor@test.com", "Ishan", "password123", Role.INSTRUCTOR);
+        User user = new User(1L, "instructor", "Ishan", "password123", Role.INSTRUCTOR);
         when(userService.getUserById(1L)).thenReturn(Optional.of(user));
 
         mockMvc.perform(get("/api/users/1"))

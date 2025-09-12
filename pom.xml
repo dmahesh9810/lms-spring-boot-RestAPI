@@ -100,15 +100,6 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- ... existing code ... -->
-        <!-- Removed explicit JUnit dependencies that caused version clashes:
-             - org.junit.jupiter:junit-jupiter-api
-             - org.junit.jupiter:junit-jupiter-engine
-             - org.junit.platform:junit-platform-launcher
-             - org.junit.platform:junit-platform-suite-api
-        -->
-        <!-- ... existing code ... -->
-        <!-- Add this for @Suite and @SelectClasses -->
         <dependency>
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-suite-api</artifactId>
@@ -120,8 +111,7 @@
       <scope>test</scope>
     </dependency>
 
-    <!-- ... existing code ... -->
-  </dependencies>
+    </dependencies>
 
 	<build>
 		<plugins>
