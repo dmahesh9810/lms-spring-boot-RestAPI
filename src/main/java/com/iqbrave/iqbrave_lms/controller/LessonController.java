@@ -19,17 +19,17 @@ public class LessonController {
 
     // Create a lesson
     @PostMapping
-    public Lesson createLesson(@RequestBody LessonDTO lessonDTO) {
+    public Lesson createLesson(@RequestBody @org.springframework.validation.annotation.Validated(LessonDTO.Create.class) LessonDTO lessonDTO) {
         return lessonService.createLesson(lessonDTO);
     }
 
     // Update lesson
     @PutMapping("/{id}")
-    public Lesson updateLesson(@PathVariable Long id, @RequestBody LessonDTO lessonDTO) {
+    public Lesson updateLesson(@PathVariable Long id, @RequestBody @org.springframework.validation.annotation.Validated(LessonDTO.Update.class) LessonDTO lessonDTO) {
         return lessonService.updateLesson(id, lessonDTO);
     }
 
-    // Delete lesson
+    // Delete a lesson
     @DeleteMapping("/{id}")
     public String deleteLesson(@PathVariable Long id) {
         lessonService.deleteLesson(id);
@@ -42,7 +42,7 @@ public class LessonController {
         return lessonService.listLessons();
     }
 
-    // Get single lesson
+    // Get a single lesson
     @GetMapping("/{id}")
     public Lesson getLesson(@PathVariable Long id) {
         return lessonService.getLessonById(id)

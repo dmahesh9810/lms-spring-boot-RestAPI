@@ -17,15 +17,15 @@ public class CourseController {
         this.courseService = courseService;
     }
 
-    // ✅ Create course
+    // ✅ Create a course
     @PostMapping
-    public Course createCourse(@RequestBody CourseDTO courseDTO) {
+    public Course createCourse(@RequestBody @jakarta.validation.Valid CourseDTO courseDTO) {
         return courseService.createCourse(courseDTO);
     }
 
     // ✅ Update course (using DTO instead of raw entity)
     @PutMapping("/{id}")
-    public Course updateCourse(@PathVariable Long id, @RequestBody CourseDTO courseDTO) {
+    public Course updateCourse(@PathVariable Long id, @RequestBody @jakarta.validation.Valid CourseDTO courseDTO) {
         return courseService.updateCourse(id, courseDTO);
     }
 

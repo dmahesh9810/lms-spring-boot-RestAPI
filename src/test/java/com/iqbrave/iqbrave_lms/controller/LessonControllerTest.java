@@ -49,8 +49,11 @@ public class LessonControllerTest {
         dto.setTitle("Intro Lesson");
         dto.setContent("Lesson Content");
         dto.setModuleId(1L);
+        dto.setFilePath("/files/lesson1.pdf");
+        dto.setVideoUrl("https://videos.example.com/lesson1"); // added required fields
 
-        Lesson saved = new Lesson(1L, "Intro Lesson", "Lesson Content", new CourseModule(1L, "Module 1", "Description", null, null));
+        Lesson saved = new Lesson(1L, "Intro Lesson", "Lesson Content",
+                new CourseModule(1L, "Module 1", "Description", null, null));
 
         when(lessonService.createLesson(any(LessonDTO.class))).thenReturn(saved);
 
@@ -72,7 +75,8 @@ public class LessonControllerTest {
         dto.setContent("Updated Content");
         dto.setModuleId(1L);
 
-        Lesson updated = new Lesson(1L, "Updated Lesson", "Updated Content", new CourseModule(1L, "Module 1", "Description", null, null));
+        Lesson updated = new Lesson(1L, "Updated Lesson", "Updated Content",
+                new CourseModule(1L, "Module 1", "Description", null, null));
 
         when(lessonService.updateLesson(eq(1L), any(LessonDTO.class))).thenReturn(updated);
 
@@ -142,5 +146,63 @@ public class LessonControllerTest {
                 .andExpect(jsonPath("$[1].title").value("Lesson 2"));
 
         verify(lessonService, times(1)).listLessons();
+    }
+
+    // ===============================
+    // ✅ VALIDATION TESTS
+    // ===============================
+
+    @Test
+    void testCreateLesson_MissingTitle() throws Exception {
+        LessonDTO dto = new LessonDTO();
+        dto.setTitle(""); // invalid
+        dto.setContent("Lesson Content");
+        dto.setModuleId(1L);
+        dto.setFilePath("/files/lesson1.pdf");
+        dto.setVideoUrl("https://videos.example.com/lesson1"); // ensure only title is invalid
+
+        mockMvc.perform(post("/api/lessons")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors.title").value("Title is required"));
+
+        verify(lessonService, never()).createLesson(any());
+    }
+
+    @Test
+    void testCreateLesson_MissingContent() throws Exception {
+        LessonDTO dto = new LessonDTO();
+        dto.setTitle("Lesson 1");
+        dto.setContent(""); // invalid
+        dto.setModuleId(1L);
+        dto.setFilePath("/files/lesson1.pdf");
+        dto.setVideoUrl("https://videos.example.com/lesson1"); // ensure only content is invalid
+
+        mockMvc.perform(post("/api/lessons")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors.content").value("Content is required"));
+
+        verify(lessonService, never()).createLesson(any());
+    }
+
+    @Test
+    void testCreateLesson_MissingModuleId() throws Exception {
+        LessonDTO dto = new LessonDTO();
+        dto.setTitle("Lesson 1");
+        dto.setContent("Lesson Content");
+        dto.setModuleId(null); // invalid
+        dto.setFilePath("/files/lesson1.pdf");
+        dto.setVideoUrl("https://videos.example.com/lesson1"); // ensure only moduleId is invalid
+
+        mockMvc.perform(post("/api/lessons")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors.moduleId").value("Module ID is required"));
+
+        verify(lessonService, never()).createLesson(any());
     }
 }

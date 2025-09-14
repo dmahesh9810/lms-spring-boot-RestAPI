@@ -19,13 +19,13 @@ public class ModuleController {
 
     // Create module
     @PostMapping
-    public CourseModule createModule(@RequestBody ModuleDTO moduleDTO) {
+    public CourseModule createModule(@RequestBody @jakarta.validation.Valid ModuleDTO moduleDTO) {
         return moduleService.createModule(moduleDTO);
     }
 
     // Update module
     @PutMapping("/{id}")
-    public CourseModule updateModule(@PathVariable Long id, @RequestBody ModuleDTO moduleDTO) {
+    public CourseModule updateModule(@PathVariable Long id, @RequestBody @jakarta.validation.Valid ModuleDTO moduleDTO) {
         return moduleService.updateModule(id, moduleDTO);
     }
 

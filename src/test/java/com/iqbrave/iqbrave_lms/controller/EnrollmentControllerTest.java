@@ -1,6 +1,7 @@
 package com.iqbrave.iqbrave_lms.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.iqbrave.iqbrave_lms.dto.EnrollmentDTO;
 import com.iqbrave.iqbrave_lms.entity.Course;
 import com.iqbrave.iqbrave_lms.entity.Enrollment;
 import com.iqbrave.iqbrave_lms.entity.Role;
@@ -197,5 +198,57 @@ public class EnrollmentControllerTest {
                 .andExpect(jsonPath("$[1].student.email").value("student2@test.com"));
 
         verify(enrollmentService, times(1)).getEnrollmentsByCourse(1L);
+    }
+    // =========================
+    // VALIDATION TESTS
+    // =========================
+
+    @Test
+    void testCreateEnrollment_MissingStudentId() throws Exception {
+        EnrollmentDTO dto = EnrollmentDTO.builder()
+                .studentId(null) // invalid
+                .courseId(1L)
+                .build();
+
+        mockMvc.perform(post("/api/enrollments")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors.studentId").value("Student ID is required"));
+
+        verify(enrollmentService, never()).enrollStudent(any(), any());
+    }
+
+    @Test
+    void testCreateEnrollment_MissingCourseId() throws Exception {
+        EnrollmentDTO dto = EnrollmentDTO.builder()
+                .studentId(1L)
+                .courseId(null) // invalid
+                .build();
+
+        mockMvc.perform(post("/api/enrollments")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors.courseId").value("Course ID is required"));
+
+        verify(enrollmentService, never()).enrollStudent(any(), any());
+    }
+
+    @Test
+    void testCreateEnrollment_MissingBothIds() throws Exception {
+        EnrollmentDTO dto = EnrollmentDTO.builder()
+                .studentId(null)
+                .courseId(null)
+                .build();
+
+        mockMvc.perform(post("/api/enrollments")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors.studentId").value("Student ID is required"))
+                .andExpect(jsonPath("$.errors.courseId").value("Course ID is required"));
+
+        verify(enrollmentService, never()).enrollStudent(any(), any());
     }
 }

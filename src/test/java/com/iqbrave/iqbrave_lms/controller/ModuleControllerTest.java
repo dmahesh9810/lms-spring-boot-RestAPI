@@ -42,28 +42,20 @@ public class ModuleControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    // Provide mocks so security components (if referenced) won’t fail wiring
     @MockitoBean
     private JwtUtil jwtUtil;
 
     @MockitoBean
     private CustomUserDetailsService customUserDetailsService;
 
-    @TestConfiguration
-    static class MockConfig {
-        @Bean
-        public ModuleService moduleService() {
-            return Mockito.mock(ModuleService.class);
-        }
-    }
-
-
-    @Autowired
+    // Replace the @TestConfiguration bean with a per-test mock:
+    @MockitoBean
     private ModuleService moduleService;
 
     @Autowired
     private ObjectMapper objectMapper;
 
+    // ✅ CREATE
     @Test
     void testCreateModule() throws Exception {
         ModuleDTO dto = new ModuleDTO(null, "Java Basics", "Intro to Java", 1L, null);
@@ -78,6 +70,7 @@ public class ModuleControllerTest {
                 .andExpect(jsonPath("$.title").value("Java Basics"));
     }
 
+    // ✅ UPDATE
     @Test
     void testUpdateModule() throws Exception {
         ModuleDTO dto = new ModuleDTO(null, "Spring Boot", "Updated", 1L, null);
@@ -92,6 +85,7 @@ public class ModuleControllerTest {
                 .andExpect(jsonPath("$.title").value("Spring Boot"));
     }
 
+    // ✅ DELETE
     @Test
     void testDeleteModule() throws Exception {
         mockMvc.perform(delete("/api/modules/1"))
@@ -99,6 +93,7 @@ public class ModuleControllerTest {
                 .andExpect(content().string("Module deleted successfully"));
     }
 
+    // ✅ LIST
     @Test
     void testListModules() throws Exception {
         CourseModule m1 = new CourseModule(1L, "Java", "Basics", new Course(), null);
@@ -111,6 +106,7 @@ public class ModuleControllerTest {
                 .andExpect(jsonPath("$.length()").value(2));
     }
 
+    // ✅ GET BY ID
     @Test
     void testGetModuleById() throws Exception {
         CourseModule courseModule = new CourseModule(1L, "Java", "Basics", new Course(), null);
@@ -120,5 +116,48 @@ public class ModuleControllerTest {
         mockMvc.perform(get("/api/modules/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("Java"));
+    }
+
+    // ===============================
+    // ✅ VALIDATION TESTS
+    // ===============================
+
+    @Test
+    void testCreateModule_MissingTitle() throws Exception {
+        ModuleDTO dto = new ModuleDTO(null, "", "Intro to Java", 1L, null);
+
+        mockMvc.perform(post("/api/modules")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors.title").value("Title is required"));
+
+        Mockito.verify(moduleService, Mockito.never()).createModule(any());
+    }
+
+    @Test
+    void testCreateModule_MissingDescription() throws Exception {
+        ModuleDTO dto = new ModuleDTO(null, "Java Basics", "", 1L, null);
+
+        mockMvc.perform(post("/api/modules")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors.description").value("Description is required"));
+
+        Mockito.verify(moduleService, Mockito.never()).createModule(any());
+    }
+
+    @Test
+    void testCreateModule_MissingCourseId() throws Exception {
+        ModuleDTO dto = new ModuleDTO(null, "Java Basics", "Intro to Java", null, null);
+
+        mockMvc.perform(post("/api/modules")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors.courseId").value("Course ID is required"));
+
+        Mockito.verify(moduleService, Mockito.never()).createModule(any());
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.util.Arrays;
 import java.util.Optional;
@@ -20,8 +21,6 @@ import java.util.Optional;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -42,10 +41,11 @@ public class CourseControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-    // ✅ Test Create Course
+    // ✅ Test Create Course (Success)
     @Test
     void testCreateCourse() throws Exception {
         CourseDTO dto = new CourseDTO("Java Basics", "Intro to Java");
+        dto.setInstructor_id(1L);
         Course saved = new Course(1L, "Java Basics", "Intro to Java");
 
         when(courseService.createCourse(any(CourseDTO.class))).thenReturn(saved);
@@ -64,6 +64,7 @@ public class CourseControllerTest {
     @Test
     void testUpdateCourse() throws Exception {
         CourseDTO dto = new CourseDTO("Java Advanced", "Deep dive into Java");
+        dto.setInstructor_id(1L);
         Course updated = new Course(1L, "Java Advanced", "Deep dive into Java");
 
         when(courseService.updateCourse(eq(1L), any(CourseDTO.class))).thenReturn(updated);
@@ -117,5 +118,50 @@ public class CourseControllerTest {
                 .andExpect(jsonPath("$.title").value("Spring Boot"));
 
         verify(courseService, times(1)).getCourseById(1L);
+    }
+
+    // ❌ Validation Test: Missing Title
+    @Test
+    void testCreateCourse_MissingTitle() throws Exception {
+        CourseDTO dto = new CourseDTO();
+        dto.setDescription("Valid description");
+        dto.setInstructor_id(1L);
+
+        mockMvc.perform(post("/api/courses")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest());
+
+        verify(courseService, never()).createCourse(any());
+    }
+
+    // ❌ Validation Test: Missing Description
+    @Test
+    void testCreateCourse_MissingDescription() throws Exception {
+        CourseDTO dto = new CourseDTO();
+        dto.setTitle("Valid Title");
+        dto.setInstructor_id(1L);
+
+        mockMvc.perform(post("/api/courses")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest());
+
+        verify(courseService, never()).createCourse(any());
+    }
+
+    // ❌ Validation Test: Missing Instructor ID
+    @Test
+    void testCreateCourse_MissingInstructorId() throws Exception {
+        CourseDTO dto = new CourseDTO();
+        dto.setTitle("Valid Title");
+        dto.setDescription("Valid description");
+
+        mockMvc.perform(post("/api/courses")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(dto)))
+                .andExpect(status().isBadRequest());
+
+        verify(courseService, never()).createCourse(any());
     }
 }
