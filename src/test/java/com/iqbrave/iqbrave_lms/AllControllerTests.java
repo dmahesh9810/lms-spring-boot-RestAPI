@@ -12,7 +12,8 @@ import org.junit.platform.suite.api.Suite;
         ModuleControllerTest.class,
         LessonControllerTest.class,
         EnrollmentControllerTest.class,
-        LessonProgressControllerTest.class
+        LessonProgressControllerTest.class,
+        QuizControllerTest.class
 })
 public class AllControllerTests {
 }

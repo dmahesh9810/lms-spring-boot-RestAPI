@@ -68,6 +68,22 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/progress/student/**").hasAnyRole("STUDENT", "INSTRUCTOR", "ADMIN")
                         .requestMatchers(HttpMethod.GET, "/api/progress/student/**/course/**/percentage")
                         .hasAnyRole("STUDENT", "INSTRUCTOR", "ADMIN")
+                        //quiz
+                                .requestMatchers(HttpMethod.POST, "/api/quizzes/**").hasAnyRole("INSTRUCTOR", "ADMIN") // create quiz
+                                .requestMatchers(HttpMethod.PUT, "/api/quizzes/**").hasAnyRole("INSTRUCTOR", "ADMIN")  // update quiz
+                                .requestMatchers(HttpMethod.DELETE, "/api/quizzes/**").hasAnyRole("INSTRUCTOR", "ADMIN") // delete quiz
+                                .requestMatchers(HttpMethod.GET, "/api/quizzes/course/**").hasAnyRole("INSTRUCTOR", "ADMIN", "STUDENT") // view quizzes of a course
+
+// Questions inside a quiz
+                                .requestMatchers(HttpMethod.POST, "/api/questions/**").hasAnyRole("INSTRUCTOR", "ADMIN")
+                                .requestMatchers(HttpMethod.PUT, "/api/questions/**").hasAnyRole("INSTRUCTOR", "ADMIN")
+                                .requestMatchers(HttpMethod.DELETE, "/api/questions/**").hasAnyRole("INSTRUCTOR", "ADMIN")
+
+// Quiz Attempts (students only)
+                                .requestMatchers(HttpMethod.POST, "/api/attempts/start/**").hasRole("STUDENT")
+                                .requestMatchers(HttpMethod.POST, "/api/attempts/submit/**").hasRole("STUDENT")
+                                .requestMatchers(HttpMethod.GET, "/api/attempts/student/**").hasRole("STUDENT")
+                                .requestMatchers(HttpMethod.GET, "/api/attempts/course/**").hasAnyRole("INSTRUCTOR", "ADMIN")
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex
